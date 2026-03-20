@@ -559,6 +559,27 @@ namespace vcpkg
                                                const StringView* maybe_sha512,
                                                std::string* out_sha512)
     {
+        // UMU: For the team! 192.168.31.200 is the IP address of our NAS
+        auto downloaded = Path("\\\\192.168.31.200\\share\\public\\vcpkg\\downloads") / download_path.filename();
+        std::error_code ec;
+        if (fs.exists(downloaded, ec))
+        {
+            fs.copy_file(downloaded, download_path, CopyOptions::skip_existing, ec);
+            if (ec)
+            {
+                puts(ec.message().c_str());
+            }
+            else
+            {
+                context.statusln(
+                    LocalizedString::from_raw(fmt::format("UMU: Copied `{}` to `{}`!", downloaded, download_path)));
+                if (!check_downloaded_file_hash(context, fs, sanitized_url, download_path, maybe_sha512, out_sha512))
+                {
+                    return DownloadPrognosis::OtherError;
+                }
+                return DownloadPrognosis::Success;
+            }
+        }
         auto download_path_part_path = download_path;
         download_path_part_path += ".";
 #if defined(_WIN32)
