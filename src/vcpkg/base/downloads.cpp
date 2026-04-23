@@ -559,6 +559,63 @@ namespace vcpkg
                                                const StringView* maybe_sha512,
                                                std::string* out_sha512)
     {
+        // UMU: {
+#define MOVE_FILES 0
+#if MOVE_FILES
+        auto me = get_exe_path_of_current_process();
+        me.make_parent_path();
+        auto downloaded = vcpkg::Path(me.parent_path()) / "vcpkg_downloads" / download_path.filename();
+        std::error_code ec;
+        if (fs.exists(downloaded, ec))
+        {
+            fs.rename(downloaded, download_path, ec);
+            if (ec)
+            {
+                puts(ec.message().c_str());
+            }
+            else
+            {
+                context.statusln(
+                    LocalizedString::from_raw(fmt::format("UMU: Moved `{}` to `{}`!", downloaded, download_path)));
+                if (!check_downloaded_file_hash(context, fs, sanitized_url, download_path, maybe_sha512, out_sha512))
+                {
+                    return DownloadPrognosis::OtherError;
+                }
+                return DownloadPrognosis::Success;
+            }
+        }
+#else
+#if defined(_WIN32)
+        // Map network drive...
+        // V: = \\NAS-IP\share\vcpkg
+        Path nas_downloaded("V:\\downloads");
+#else
+        // mount.smb3 //NAS-IP/share/vcpkg /mnt/vcpkg
+        Path nas_downloaded("/mnt/vcpkg/downloads");
+#endif
+        auto downloaded = nas_downloaded / download_path.filename();
+        std::error_code ec;
+        if (fs.exists(downloaded, ec))
+        {
+            fs.copy_file(downloaded, download_path, CopyOptions::skip_existing, ec);
+            if (ec)
+            {
+                puts(ec.message().c_str());
+            }
+            else
+            {
+                context.statusln(
+                    LocalizedString::from_raw(fmt::format("UMU: Copied `{}` to `{}`!", downloaded, download_path)));
+                if (!check_downloaded_file_hash(context, fs, sanitized_url, download_path, maybe_sha512, out_sha512))
+                {
+                    return DownloadPrognosis::OtherError;
+                }
+                return DownloadPrognosis::Success;
+            }
+        }
+#endif
+        // UMU: }
+
         auto download_path_part_path = download_path;
         download_path_part_path += ".";
 #if defined(_WIN32)
