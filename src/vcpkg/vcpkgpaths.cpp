@@ -566,7 +566,7 @@ namespace vcpkg
             , m_registries_dot_git_dir(m_registries_cache / "git" / ".git")
             , m_registries_git_trees(m_registries_cache / "git-trees")
             , downloads(compute_downloads_root(fs, args, root, bundle.read_only))
-            , tools(downloads / "tools")
+            , tools(Path{downloads.parent_path()} / "tools")
             , m_installed(compute_installed(fs, args, root, bundle.read_only, m_manifest_dir))
             , buildtrees(maybe_get_tmp_path(fs,
                                             m_installed,
@@ -634,6 +634,7 @@ namespace vcpkg
         , m_pimpl(std::make_unique<VcpkgPathsImpl>(filesystem, args, bundle, root, original_cwd))
         , scripts(m_pimpl->scripts)
         , downloads(m_pimpl->downloads)
+        , tools(m_pimpl->tools)
         , builtin_registry_versions(
               process_output_directory(filesystem, args.builtin_registry_versions_dir.get(), root / "versions"))
         , buildsystems(scripts / "buildsystems")

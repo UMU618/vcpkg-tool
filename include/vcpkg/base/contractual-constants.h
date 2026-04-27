@@ -396,6 +396,7 @@ namespace vcpkg
     inline constexpr StringLiteral CMakeVariableDisableCompilerTracking = "VCPKG_DISABLE_COMPILER_TRACKING";
     inline constexpr StringLiteral CMakeVariableDownloadMode = "VCPKG_DOWNLOAD_MODE";
     inline constexpr StringLiteral CMakeVariableDownloads = "DOWNLOADS";
+    inline constexpr StringLiteral CMakeVariableTools = "TOOLS";
     inline constexpr StringLiteral CMakeVariableEditable = "_VCPKG_EDITABLE";
     inline constexpr StringLiteral CMakeVariableEnvPassthrough = "VCPKG_ENV_PASSTHROUGH";
     inline constexpr StringLiteral CMakeVariableEnvPassthroughUntracked = "VCPKG_ENV_PASSTHROUGH_UNTRACKED";

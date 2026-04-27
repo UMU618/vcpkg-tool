@@ -794,6 +794,7 @@ namespace vcpkg
     {
         out_vars.emplace_back(CMakeVariableCmd, "BUILD");
         out_vars.emplace_back(CMakeVariableDownloads, paths.downloads);
+        out_vars.emplace_back(CMakeVariableTools, paths.tools);
         out_vars.emplace_back(CMakeVariableTargetTriplet, triplet.canonical_name());
         out_vars.emplace_back(CMakeVariableTargetTripletFile, paths.get_triplet_db().get_triplet_file_path(triplet));
         out_vars.emplace_back(CMakeVariableBaseVersion, VCPKG_BASE_VERSION_AS_STRING);
