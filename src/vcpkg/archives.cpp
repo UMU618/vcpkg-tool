@@ -80,7 +80,7 @@ namespace
                        .string_arg(to_path)
                        .string_arg("-Source")
                        .string_arg(archive.parent_path())
-                       .string_arg("-nocache")
+                       .string_arg("-NoHttpCache")
                        .string_arg("-DirectDownload")
                        .string_arg("-NonInteractive")
                        .string_arg("-ForceEnglishOutput")
@@ -256,10 +256,9 @@ namespace vcpkg
                                                         const Path& archive,
                                                         const Path& to_path)
     {
-        Path to_path_partial = to_path + ".partial";
-#if defined(_WIN32)
-        to_path_partial += "." + std::to_string(GetCurrentProcessId());
-#endif
+        // Suffix the partial directory with the current process id so concurrent vcpkg
+        // invocations don't collide on it (microsoft/vcpkg#50051).
+        Path to_path_partial = to_path + ".partial." + std::to_string(get_process_id());
 
         fs.remove_all(to_path_partial, VCPKG_LINE_INFO);
         fs.create_directories(to_path_partial, VCPKG_LINE_INFO);
